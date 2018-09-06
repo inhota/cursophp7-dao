@@ -72,6 +72,55 @@ class Usuario
 		}
 	}
 
+//lista com todos os usuarios no bd
+
+public static function getList()
+{
+	$sql = new Sql();
+
+	return $sql->select("select * from tb_usuarios order by deslogin;");
+}
+
+//Lista de usurios buscando por parametro defiinido no login ex tudo que tiver inhota
+public static function search($login)
+{
+	$sql = new Sql();
+
+	return $sql->select("SELECT * from tb_usuarios where deslogin like :SEARCH order by deslogin", array(
+		':SEARCH'=>"%".$login."%"
+
+	));
+}
+
+//obter os dados do usuario fazendo verificação autenticação
+public function login($login, $password)
+{
+
+	$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN and dessenha = :PASSWORD", array(
+			":LOGIN"=>$login,
+			":PASSWORD"=>$password
+		));
+
+
+	if (count($results)> 0)
+	 	{
+		$row = $results[0];
+
+		$this->setIdusuario($row["idusuario"]);
+		$this->setDeslogin($row["deslogin"]);
+		$this->setDessenha($row["dessenha"]);
+		$this->setDtcadastro(new DateTime($row["dtcadastro"]));
+
+		}
+		else
+		{
+			throw new Exception("login e/ou senha invalidos.");
+			
+		}
+
+}
 
 //Metodo para exibir informações json get= mostrar
 	public function __toString()
